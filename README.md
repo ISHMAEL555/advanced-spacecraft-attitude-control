@@ -1,133 +1,191 @@
 # 🛰️ Nonlinear Spacecraft Attitude Control under Constraints
 
-A modular Python framework for the **design, implementation, and comparative analysis** of nonlinear attitude control laws for a rigid spacecraft under actuator saturation and persistent disturbances.
+A modular Python framework for the **design, implementation, and rigorous comparative analysis** of nonlinear attitude control laws for a rigid spacecraft under actuator saturation and persistent external disturbances.
 
 ---
 
 ## 🚀 Overview
 
-This project investigates the **rest-to-rest attitude stabilization problem** using multiple attitude representations and nonlinear control strategies.
+This project investigates the **rest-to-rest attitude stabilization problem** across:
 
-The focus is on evaluating controller performance under realistic conditions:
+* **3 attitude representations**
+* **3 control architectures**
+* **2 disturbance regimes**
 
-* Nonlinear rigid body dynamics
-* Actuator saturation constraints
-* Constant external disturbances
-* Representation-dependent kinematics
+→ **Total: 18 simulation configurations**
 
-The framework emphasizes **physical consistency, numerical robustness, and structured comparison**.
+Each configuration is evaluated against a consistent set of performance metrics.
+
+The emphasis is on:
+
+* Physical correctness
+* Numerical robustness
+* Honest comparative analysis
+
+This is not just about showing convergence, but understanding:
+
+> how the system behaves, how fast it converges, and under what conditions it fails.
 
 ---
 
 ## 🧱 Spacecraft Model
 
-**Inertia Matrix**
+### **Inertia Matrix**
 
 ```
 I = diag(10, 20, 30)   [kg·m²]
 ```
 
-**Initial Conditions**
-
-* MRP: `sigma0 = (0, 0.8, 0)`
-* Angular velocity: `omega0 = (0, 2, 0) rad/s`
-
-**Control Objective**
+### **Initial Conditions**
 
 ```
-sigma → 0
-omega → 0
+MRP:              σ₀ = (0, 0.8, 0)
+Angular velocity: ω₀ = (0, 2, 0)   [rad/s]
+```
+
+### **Control Objective**
+
+```
+σ → 0,   ω → 0   (rest-to-rest stabilization)
 ```
 
 ---
 
 ## ⚙️ Dynamics
 
-The rotational dynamics are governed by:
+Euler’s rotational equation of motion:
 
 ```
-I * omega_dot + omega × (I * omega) = u + L
+I · ω̇ + ω × (I · ω) = u + L
 ```
 
-Where:
+where:
 
-* `omega` → body angular velocity
 * `u` → control torque
 * `L` → external disturbance torque
+
+Kinematics are propagated using representation-specific equations.
 
 ---
 
 ## 🧭 Attitude Representations
 
-The following representations are implemented and compared:
+| Representation    | Singularity         | Notes                                |
+| ----------------- | ------------------- | ------------------------------------ |
+| **MRP**           | |σ| = 1             | Shadow switching for large rotations |
+| **Quaternion**    | None (double cover) | Requires unwinding prevention        |
+| **Euler (3-2-1)** | Pitch = ±90°        | Included to demonstrate limitations  |
 
-| Representation           | Characteristics                                   |
-| ------------------------ | ------------------------------------------------- |
-| **MRPs**                 | Compact, efficient, requires shadow set switching |
-| **Quaternions**          | Singular-free, numerically robust                 |
-| **Euler Angles (3-2-1)** | Intuitive, but prone to singularities             |
+---
+
+### 🔹 MRP Shadow Set Switching
+
+At every integration step, check:
+
+```
+|σ| > 1
+```
+
+If triggered:
+
+```
+σ_s = -σ / |σ|²
+```
+
+This prevents divergence during large-angle maneuvers.
+
+---
+
+### 🔹 Quaternion Unwinding Prevention
+
+Error quaternion:
+
+```
+q_err = q_d ⊗ q⁻¹
+```
+
+Sign correction:
+
+```python
+if q_err[0] < 0:
+    q_err = -q_err
+```
+
+Prevents unnecessary large-angle rotations.
 
 ---
 
 ## 🎛️ Control Architectures
 
-### 🔹 Proportional-Derivative (PD)
+### 🔹 PD Control
 
 ```
-u = -Kp * e_att - Kd * omega
+u = -Kp · e_att - Kd · ω
 ```
 
-* Stable in the absence of disturbances
-* Exhibits steady-state error under constant disturbance
+* Stable without disturbance
+* Non-zero steady-state error with disturbance
 
 ---
 
-### 🔹 PD with Integral Action
+### 🔹 PD + Integral (PID)
 
 ```
-u = -Kp * e_att - Kd * omega - Ki * integral(e_att)
+u = -Kp · e_att - Kd · ω - Ki · ∫e_att dt
 ```
 
-* Eliminates steady-state error under constant disturbances
-* Introduces slower convergence and potential overshoot
-* Requires anti-windup under actuator limits
+* Eliminates steady-state error
+* Requires **anti-windup compensation**
+
+Back-calculation:
+
+```
+e_int_dot = e_att + (u_sat - u_unsat) / Ki
+```
 
 ---
 
 ### 🔹 Lyapunov-Based Control
 
+Lyapunov candidate:
+
 ```
-V = 0.5 * omega^T * I * omega + k * Phi(e_att)
+V = (1/2) · ωᵀ · I · ω + k · Φ(e_att)
 ```
 
-* Ensures stability through Lyapunov design
-* Accounts for actuator saturation
-* Provides bounded, robust response
+Control law derived from:
+
+```
+V̇ ≤ 0
+```
+
+* Stability-driven design
+* Saturation-aware behavior
 
 ---
 
 ## 🔒 Actuator Constraints
 
 ```
-|u_i| ≤ 0.1   [N·m],   i = 1,2,3
+|u_i| ≤ 0.1   [N·m]
 ```
 
-Two regimes are considered:
-
-* ✅ **Unsaturated operation** (baseline validation)
-* ⚠️ **Saturated operation** (realistic constraint handling)
+| Regime        | Description                   |
+| ------------- | ----------------------------- |
+| ✅ Unsaturated | Baseline validation           |
+| ⚠️ Saturated  | Realistic constraint handling |
 
 ---
 
 ## 🌪️ Disturbance Scenarios
 
-### Case A — No Disturbance
+### **Case A — No Disturbance**
 
 ```
 L = (0, 0, 0)
 ```
 
-### Case B — Constant Disturbance
+### **Case B — Constant Disturbance**
 
 ```
 L = (1, 2, -1)   [N·m]
@@ -137,38 +195,73 @@ Represents persistent body-fixed disturbances (e.g., propellant leakage).
 
 ---
 
-## 🧪 Simulation Coverage
+## 🧪 Simulation Matrix
 
-All combinations are evaluated:
+| Dimension               | Options                |
+| ----------------------- | ---------------------- |
+| Attitude Representation | MRP, Quaternion, Euler |
+| Control Law             | PD, PID, Lyapunov      |
+| Disturbance Case        | Case A, Case B         |
 
-* 3 Attitude Representations
-* 3 Control Laws
-* 2 Disturbance Cases
-
-**Total Simulations: 18**
+**Total simulations: 18**
 
 ---
 
 ## 📊 Performance Metrics
 
-Each configuration is evaluated using:
-
-* ⏱️ Convergence time
-* 🎯 Steady-state error
-* 📉 Angular velocity decay
-* ⚡ Control effort (∫|u| dt)
-* 🚧 Saturation behavior
+| Metric                 | Definition                 |
+| ---------------------- | -------------------------- |
+| Convergence time       | Time to reach < 0.5°       |
+| Steady-state error     | Mean error over final 10 s |
+| Angular velocity decay | Time to reach |ω| < 0.01   |
+| Control effort         | ∫ |u(t)| dt                |
+| Saturation duration    | Time spent in saturation   |
 
 ---
 
-## 📈 Expected Results
+## 📈 Results
 
-| Controller | Disturbance | Expected Behavior                 |
-| ---------- | ----------- | --------------------------------- |
-| PD         | No          | Stable, fast convergence          |
-| PD         | Yes         | Non-zero steady-state error       |
-| PID        | Yes         | Near-zero steady-state error      |
-| Lyapunov   | Yes         | Stable, saturation-aware response |
+*Populated after simulation runs are complete.*
+
+| Representation | Controller | Disturbance | Conv. Time | SS Error | Effort |
+| -------------- | ---------- | ----------- | ---------- | -------- | ------ |
+| MRP            | PD         | None        | —          | —        | —      |
+| MRP            | PID        | Constant    | —          | —        | —      |
+| Quaternion     | PD         | None        | —          | —        | —      |
+| Euler          | Lyapunov   | Constant    | —          | —        | —      |
+
+📁 Full outputs available in `results/`
+
+---
+
+## ✅ Validation
+
+### 1. Cross-Representation Consistency
+
+All representations must produce identical **ω(t)**.
+
+---
+
+### 2. Euler Singularity Demonstration
+
+Simulation near pitch = 90° highlights representation limitations.
+
+---
+
+## 🎲 Monte Carlo Robustness
+
+```
+I_perturbed = diag(I) · (1 + δ)
+δ ~ Uniform(-0.10, +0.10)
+N = 500
+```
+
+Outputs:
+
+* Convergence rate
+* Mean and 3σ bounds
+
+📁 Results: `results/monte_carlo/`
 
 ---
 
@@ -179,6 +272,7 @@ attitude-control-simulator/
 │
 ├── src/
 │   ├── dynamics/
+│   ├── representations/
 │   ├── control/
 │   ├── simulation/
 │   └── analysis/
@@ -191,32 +285,34 @@ attitude-control-simulator/
 
 ---
 
-## 🧠 Key Insights
+## 🧠 Key Engineering Observations
 
-* MRPs are efficient but require careful switching
-* Quaternions provide the most robust numerical performance
-* Euler angles highlight singularity limitations
-* Integral control is essential for disturbance rejection
-* Actuator saturation significantly affects closed-loop behavior
+* MRP switching is essential for correctness
+* Quaternion unwinding significantly affects control effort
+* Anti-windup is critical under saturation
+* Lyapunov control maintains stability under constraints
+* Euler angles expose singularity limitations
 
 ---
 
 ## 🔮 Future Work
 
-* Reaction wheel actuator modeling
-* State estimation (e.g., Extended Kalman Filter)
-* Sensor noise and bias modeling
-* Discrete-time controller implementation
-* Monte Carlo robustness analysis
+* Reaction wheel modeling
+* State estimation (EKF)
+* Sensor noise and bias
+* Discrete-time control
+* Hardware-in-the-loop validation
 
 ---
 
 ## 🛠️ Requirements
 
-* Python 3.10+
-* NumPy
-* SciPy
-* Matplotlib
+```
+Python 3.10+
+numpy
+scipy
+matplotlib
+```
 
 ---
 
@@ -227,5 +323,5 @@ MIT License
 ---
 
 <p align="center">
-  <i>Focused on physically consistent modeling and realistic control behavior.</i>
+  <i>Focused on physically consistent modeling and rigorous control analysis.</i>
 </p>
