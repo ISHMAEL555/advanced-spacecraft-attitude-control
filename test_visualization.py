@@ -38,7 +38,7 @@ u_sat = np.array(state.u_saturated)
 
 # Error norm
 ax = axes[0, 0]
-error_norm = np.linalg.norm(attitude_error, axis=1)
+error_norm = np.clip(np.linalg.norm(attitude_error, axis=1), 1e-12, None)
 ax.semilogy(t, error_norm, 'b-', linewidth=2)
 ax.set_xlabel('Time [s]')
 ax.set_ylabel('Attitude Error [rad]')
@@ -47,7 +47,7 @@ ax.grid(True, alpha=0.3)
 
 # Angular velocity
 ax = axes[0, 1]
-omega_norm = np.linalg.norm(omega, axis=1)
+omega_norm = np.clip(np.linalg.norm(omega, axis=1), 1e-12, None)
 ax.semilogy(t, omega_norm, 'g-', linewidth=2)
 ax.set_xlabel('Time [s]')
 ax.set_ylabel('Angular Velocity [rad/s]')

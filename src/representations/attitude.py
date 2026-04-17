@@ -279,7 +279,13 @@ class EulerAngles(AttitudeRepresentation):
         cos_phi = np.cos(phi)
         sin_theta = np.sin(theta)
         cos_theta = np.cos(theta)
-        tan_theta = np.tan(theta)
+
+        # Avoid numerical blow-up near 3-2-1 singularity (theta -> ±90 deg)
+        eps = 1e-6
+        if abs(cos_theta) < eps:
+            cos_theta = np.sign(cos_theta) * eps if cos_theta != 0.0 else eps
+
+        tan_theta = sin_theta / cos_theta
 
         # E matrix
         E = np.array([
