@@ -2,11 +2,11 @@
 
 import numpy as np
 from scipy.integrate import solve_ivp
-from typing import Dict, Tuple, Callable, List
+from typing import Dict, Tuple
 
 from src.dynamics import SpacecraftDynamics
-from src.representations import AttitudeRepresentation, MRP
-from src.control import ControlLaw
+from src.representations import AttitudeRepresentation
+from src.control import ControlLaw, PIDControl, LyapunovControl
 
 
 class SimulationState:
@@ -82,18 +82,28 @@ class SpacecraftSimulator:
             attitude_init = initial_attitude
             attitude_desired = desired_attitude
 
-        # Initial state vector: [attitude, omega]
-        y0 = np.concatenate([attitude_init, initial_omega])
+        is_pid = isinstance(self.control_law, PIDControl)
+
+        # Initial state vector: [attitude, omega, integral_error?]
+        if is_pid:
+            self.control_law.reset()
+            y0 = np.concatenate([attitude_init, initial_omega, self.control_law.integral_error])
+        else:
+            y0 = np.concatenate([attitude_init, initial_omega])
         t_eval = np.linspace(0, t_final, num_points)
 
         # ODE system
         def dynamics_rhs(t: float, y: np.ndarray) -> np.ndarray:
             if isinstance(self.attitude_rep, Quaternion):
-                attitude = y[:4]
+                attitude = Quaternion.normalize(y[:4])
                 omega = y[4:7]
+                idx_after_omega = 7
             else:
                 attitude = y[:3]
                 omega = y[3:6]
+                idx_after_omega = 6
+
+            integral_error = y[idx_after_omega:idx_after_omega + 3] if is_pid else None
 
             # Compute attitude error
             error_attitude_rep = self.attitude_rep.error_state(attitude, attitude_desired)
@@ -105,19 +115,17 @@ class SpacecraftSimulator:
             else:
                 error_attitude = error_attitude_rep
 
-            # Compute control torque (now always 3 DOF)
-            u = self.control_law.compute_torque(error_attitude, omega, t)
-
-            # For PID, handle anti-windup
-            if hasattr(self.control_law, 'update_integral_state'):
+            if is_pid:
                 u_unsat = (
                     -self.control_law.Kp * error_attitude
                     - self.control_law.Kd * omega
-                    - self.control_law.Ki * self.control_law.integral_error
+                    - self.control_law.Ki * integral_error
                 )
-                self.control_law.update_integral_state(
-                    error_attitude, u, u_unsat, dt=1.0/num_points*t_final
-                )
+                u = np.clip(u_unsat, -self.control_law.sat_limit, self.control_law.sat_limit)
+                integral_dot = error_attitude + (u - u_unsat) / (self.control_law.Ki + 1e-10)
+            else:
+                u = self.control_law.compute_torque(error_attitude, omega, t)
+                integral_dot = None
 
             # Compute angular acceleration from dynamics
             omega_dot = self.dynamics.angular_velocity_derivative(
@@ -127,6 +135,8 @@ class SpacecraftSimulator:
             # Compute attitude rate
             attitude_dot = self.attitude_rep.kinematics(attitude, omega)
 
+            if is_pid:
+                return np.concatenate([attitude_dot, omega_dot, integral_dot])
             return np.concatenate([attitude_dot, omega_dot])
 
         # Solve ODE
@@ -144,19 +154,21 @@ class SpacecraftSimulator:
         state.t = sol.t
 
         if isinstance(self.attitude_rep, Quaternion):
-            state.attitude = sol.y[0:4, :].T
+            state.attitude = np.array([Quaternion.normalize(q) for q in sol.y[0:4, :].T])
             state.omega = sol.y[4:7, :].T
+            idx_after_omega = 7
         else:
             state.attitude = sol.y[0:3, :].T
             state.omega = sol.y[3:6, :].T
+            idx_after_omega = 6
+
+        integral_traj = sol.y[idx_after_omega:idx_after_omega + 3, :].T if is_pid else None
 
         # Compute errors and control torques for each time step
         state.u_control = []
         state.u_saturated = []
         state.attitude_error = []
         state.saturation_times = []
-
-        self.control_law.reset()  # Reset for replay
 
         for i, t_val in enumerate(sol.t):
             attitude = state.attitude[i]
@@ -172,11 +184,29 @@ class SpacecraftSimulator:
 
             state.attitude_error.append(error_attitude)
 
-            u = self.control_law.compute_torque(error_attitude, omega, t_val)
-            state.u_saturated.append(u)
+            if is_pid:
+                integral_error = integral_traj[i]
+                u_unsat = (
+                    -self.control_law.Kp * error_attitude
+                    - self.control_law.Kd * omega
+                    - self.control_law.Ki * integral_error
+                )
+                u_sat = np.clip(u_unsat, -self.control_law.sat_limit, self.control_law.sat_limit)
+            elif isinstance(self.control_law, LyapunovControl):
+                norm_sq = np.dot(error_attitude, error_attitude)
+                attitude_gain = self.control_law.k1 / (1.0 + norm_sq)
+                u_unsat = -attitude_gain * error_attitude - self.control_law.k2 * omega
+                u_sat = np.clip(u_unsat, -self.control_law.sat_limit, self.control_law.sat_limit)
+            else:
+                u_unsat = self.control_law.compute_torque(error_attitude, omega, t_val)
+                u_sat = u_unsat
+
+            state.u_control.append(u_unsat)
+            state.u_saturated.append(u_sat)
 
             # Check for saturation
-            if np.any(np.abs(u) > 0.1 - 1e-6):
+            saturation_limit = getattr(self.control_law, 'sat_limit', 0.1)
+            if np.any(np.abs(u_sat) >= saturation_limit - 1e-6):
                 state.saturation_times.append(t_val)
 
         state.u_control = np.array(state.u_control)

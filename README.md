@@ -232,6 +232,21 @@ Represents persistent body-fixed disturbances (e.g., propellant leakage).
 
 📁 Full outputs available in `results/`
 
+### Example visual outputs
+
+After running:
+
+```bash
+python run_simulations.py
+python visualize.py
+```
+
+you can inspect generated plots such as:
+
+- `results/visualizations/Quaternion_PID_NoDisturbance.png`
+- `results/visualizations/MRP_PD_Constant.png`
+- `results/visualizations/comparison_all.png`
+
 ---
 
 ## ✅ Validation

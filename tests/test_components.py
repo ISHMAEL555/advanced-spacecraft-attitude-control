@@ -232,6 +232,25 @@ class TestSimulator:
         assert state.omega.shape == (100, 3)
         assert len(state.attitude_error) == 100
 
+    def test_control_histories_are_populated(self):
+        """Simulator should provide unsaturated and saturated control histories."""
+        dynamics = SpacecraftDynamics()
+        mrp = MRP()
+        pid = PIDControl(Kp=0.5, Kd=0.1, Ki=0.05, saturation_limit=0.1)
+        simulator = SpacecraftSimulator(dynamics, mrp, pid)
+
+        state = simulator.simulate(
+            np.array([0.0, 0.8, 0.0]),
+            np.array([0.0, 2.0, 0.0]),
+            np.zeros(3),
+            t_final=5.0,
+            num_points=80
+        )
+
+        assert state.u_control.shape == (80, 3)
+        assert state.u_saturated.shape == (80, 3)
+        assert np.all(np.abs(state.u_saturated) <= 0.1 + 1e-8)
+
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
