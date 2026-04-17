@@ -253,6 +253,23 @@ class TestSimulator:
         assert np.all(np.abs(state.u_saturated) <= 0.1 + 1e-8)
         assert np.allclose(pid.integral_error, initial_integral_state)
 
+    def test_pd_controller_reports_no_saturation_events(self):
+        """PD controller has no actuator clamp in this model, so no saturation events."""
+        dynamics = SpacecraftDynamics()
+        mrp = MRP()
+        pd = PDControl(Kp=0.5, Kd=0.1)
+        simulator = SpacecraftSimulator(dynamics, mrp, pd)
+
+        state = simulator.simulate(
+            np.array([0.0, 0.8, 0.0]),
+            np.array([0.0, 2.0, 0.0]),
+            np.zeros(3),
+            t_final=5.0,
+            num_points=80
+        )
+
+        assert len(state.saturation_times) == 0
+
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])

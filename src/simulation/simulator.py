@@ -70,7 +70,7 @@ class SpacecraftSimulator:
             SimulationState with complete trajectory
         """
         # Convert attitudes to the appropriate representation
-        from src.representations import Quaternion, EulerAngles, MRP as MRPRep
+        from src.representations import Quaternion, EulerAngles
 
         if isinstance(self.attitude_rep, Quaternion):
             attitude_init = Quaternion.from_mrp(initial_attitude)
@@ -205,9 +205,8 @@ class SpacecraftSimulator:
             state.u_control.append(u_unsat)
             state.u_saturated.append(u_sat)
 
-            # Check for saturation
-            saturation_limit = getattr(self.control_law, 'sat_limit', 0.1)
-            if np.any(np.abs(u_sat) >= saturation_limit - 1e-6):
+            # Saturation occurs only when clamping changed the commanded torque.
+            if np.any(np.abs(u_sat - u_unsat) > 1e-10):
                 state.saturation_times.append(t_val)
 
         state.u_control = np.array(state.u_control)
