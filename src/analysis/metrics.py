@@ -12,14 +12,14 @@ class PerformanceMetrics:
     @staticmethod
     def convergence_time(
         state: SimulationState,
-        threshold: float = 0.5
+        threshold: float = 1.0
     ) -> Tuple[float, int]:
         """
         Compute convergence time (time to reach < threshold degrees).
 
         Args:
             state: SimulationState with results
-            threshold: Convergence threshold [degrees]
+            threshold: Convergence threshold [degrees] (default: 1.0 degree)
 
         Returns:
             (convergence_time, index) or (inf, -1) if not converged
