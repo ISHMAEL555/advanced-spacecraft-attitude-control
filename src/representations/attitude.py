@@ -45,6 +45,33 @@ class MRP(AttitudeRepresentation):
     """Modified Rodriguez Parameters (MRP) representation."""
 
     @staticmethod
+    def to_quaternion(sigma: np.ndarray) -> np.ndarray:
+        """Convert MRP to quaternion (scalar-last convention)."""
+        norm_sq = np.dot(sigma, sigma)
+
+        # q = [(2*σ) / (1 + |σ|²), (1 - |σ|²) / (1 + |σ|²)]
+        denom = 1.0 + norm_sq
+        v = (2.0 * sigma) / denom
+        w = (1.0 - norm_sq) / denom
+
+        return np.array([v[0], v[1], v[2], w])
+
+    @staticmethod
+    def to_euler_angles(sigma: np.ndarray) -> np.ndarray:
+        """Convert MRP to Euler angles (3-2-1 convention)."""
+        # First convert to DCM
+        mrp = MRP()
+        C = mrp.to_matrix(sigma)
+
+        # Extract Euler angles from DCM (3-2-1 convention)
+        # C = Rz(ψ) * Ry(θ) * Rx(φ)
+        theta = -np.arcsin(C[2, 0])
+        phi = np.arctan2(C[2, 1], C[2, 2])
+        psi = np.arctan2(C[1, 0], C[0, 0])
+
+        return np.array([phi, theta, psi])
+
+    @staticmethod
     def shadow_check(sigma: np.ndarray) -> np.ndarray:
         """
         Apply MRP shadow set switching for |σ| > 1.
@@ -102,7 +129,7 @@ class MRP(AttitudeRepresentation):
             return np.zeros(3)
 
         sigma_err = numerator / denominator
-        return self.shadow_check(sigma_err)
+        return MRP.shadow_check(sigma_err)
 
     def to_matrix(self, sigma: np.ndarray) -> np.ndarray:
         """Convert MRP to direction cosine matrix."""
@@ -124,6 +151,31 @@ class MRP(AttitudeRepresentation):
 
 class Quaternion(AttitudeRepresentation):
     """Quaternion representation (scalar-last convention: [x, y, z, w])."""
+
+    @staticmethod
+    def from_mrp(sigma: np.ndarray) -> np.ndarray:
+        """Convert MRP to quaternion (scalar-last convention)."""
+        norm_sq = np.dot(sigma, sigma)
+
+        # q = [(2*σ) / (1 + |σ|²), (1 - |σ|²) / (1 + |σ|²)]
+        denom = 1.0 + norm_sq
+        v = (2.0 * sigma) / denom
+        w = (1.0 - norm_sq) / denom
+
+        return np.array([v[0], v[1], v[2], w])
+
+    @staticmethod
+    def to_mrp(q: np.ndarray) -> np.ndarray:
+        """Convert quaternion to MRP."""
+        q = Quaternion.normalize(q)
+        v, w = q[:3], q[3]
+
+        # σ = v / (1 + w)
+        if abs(1.0 + w) < 1e-10:
+            return np.zeros(3)
+
+        sigma = v / (1.0 + w)
+        return sigma
 
     @staticmethod
     def normalize(q: np.ndarray) -> np.ndarray:
@@ -199,6 +251,21 @@ class Quaternion(AttitudeRepresentation):
 
 class EulerAngles(AttitudeRepresentation):
     """Euler angles representation (3-2-1 convention)."""
+
+    @staticmethod
+    def from_mrp(sigma: np.ndarray) -> np.ndarray:
+        """Convert MRP to Euler angles (3-2-1 convention)."""
+        # First convert to DCM
+        mrp = MRP()
+        C = mrp.to_matrix(sigma)
+
+        # Extract Euler angles from DCM (3-2-1 convention)
+        # C = Rz(ψ) * Ry(θ) * Rx(φ)
+        theta = -np.arcsin(C[2, 0])
+        phi = np.arctan2(C[2, 1], C[2, 2])
+        psi = np.arctan2(C[1, 0], C[0, 0])
+
+        return np.array([phi, theta, psi])
 
     def kinematics(self, angles: np.ndarray, omega: np.ndarray) -> np.ndarray:
         """

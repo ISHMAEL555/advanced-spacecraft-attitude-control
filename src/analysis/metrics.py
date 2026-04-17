@@ -1,6 +1,7 @@
 """Analysis and metrics computation."""
 
 import numpy as np
+from scipy.integrate import trapezoid
 from typing import Dict, Tuple
 from src.simulation import SimulationState
 
@@ -89,7 +90,7 @@ class PerformanceMetrics:
         u_norms = np.linalg.norm(state.u_saturated, axis=1)
 
         # Trapezoidal integration
-        effort = np.trapz(u_norms, state.t)
+        effort = trapezoid(u_norms, state.t)
         return effort
 
     @staticmethod

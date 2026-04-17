@@ -1,0 +1,57 @@
+
+================================================================================
+SPACECRAFT ATTITUDE CONTROL - FULL SIMULATION MATRIX
+================================================================================
+
+
+================================================================================
+SIMULATION MATRIX (18 configurations)
+================================================================================
+
+Euler:
+  Constant: PD, PID, Lyapunov
+  NoDisturbance: PD, PID, Lyapunov
+
+MRP:
+  Constant: PD, PID, Lyapunov
+  NoDisturbance: PD, PID, Lyapunov
+
+Quaternion:
+  Constant: PD, PID, Lyapunov
+  NoDisturbance: PD, PID, Lyapunov
+
+================================================================================
+
+Running simulations...
+--------------------------------------------------------------------------------
+[1/18]   Running MRP_PD_NoDisturbance... Traceback (most recent call last):
+  File "/workspaces/advanced-spacecraft-attitude-control/run_simulations.py", line 183, in <module>
+    main()
+  File "/workspaces/advanced-spacecraft-attitude-control/run_simulations.py", line 98, in main
+    result = run_single_simulation(config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/advanced-spacecraft-attitude-control/run_simulations.py", line 65, in run_single_simulation
+    state = simulator.simulate(
+            ^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/advanced-spacecraft-attitude-control/src/simulation/simulator.py", line 126, in simulate
+    sol = solve_ivp(
+          ^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/scipy/integrate/_ivp/ivp.py", line 623, in solve_ivp
+    solver = method(fun, t0, y0, tf, vectorized=vectorized, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/scipy/integrate/_ivp/rk.py", line 94, in __init__
+    self.f = self.fun(self.t, self.y)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/scipy/integrate/_ivp/base.py", line 158, in fun
+    return self.fun_single(t, y)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/scipy/integrate/_ivp/base.py", line 24, in fun_wrapped
+    return np.asarray(fun(t, y), dtype=dtype)
+                      ^^^^^^^^^
+  File "/workspaces/advanced-spacecraft-attitude-control/src/simulation/simulator.py", line 99, in dynamics_rhs
+    error_attitude = self.attitude_rep.error_state(attitude, attitude_desired)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/advanced-spacecraft-attitude-control/src/representations/attitude.py", line 129, in error_state
+    return self.shadow_check(sigma_err)
+           ^^^^^^^^^^^^^^^^^
+AttributeError: 'MRP' object has no attribute 'shadow_check'

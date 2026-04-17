@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspaces/advanced-spacecraft-attitude-control/run_simulations.py", line 11, in <module>
+    from src.representations import MRP, Quaternion, EulerAngles
+  File "/workspaces/advanced-spacecraft-attitude-control/src/representations/__init__.py", line 3, in <module>
+    from .attitude import AttitudeRepresentation, MRP, Quaternion, EulerAngles
+  File "/workspaces/advanced-spacecraft-attitude-control/src/representations/attitude.py", line 268
+    """
+IndentationError: unexpected indent

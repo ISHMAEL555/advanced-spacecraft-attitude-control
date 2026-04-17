@@ -59,9 +59,9 @@ class SpacecraftSimulator:
         Run full simulation.
 
         Args:
-            initial_attitude: Initial attitude state
+            initial_attitude: Initial attitude state (assumed to be in MRP)
             initial_omega: Initial angular velocity [rad/s]
-            desired_attitude: Desired attitude state
+            desired_attitude: Desired attitude state (assumed to be in MRP)
             t_final: Final simulation time [s]
             num_points: Number of output points
             method: ODE solver method
@@ -69,19 +69,43 @@ class SpacecraftSimulator:
         Returns:
             SimulationState with complete trajectory
         """
-        # Initial state vector: [attitude(3), omega(3)]
-        y0 = np.concatenate([initial_attitude, initial_omega])
+        # Convert attitudes to the appropriate representation
+        from src.representations import Quaternion, EulerAngles, MRP as MRPRep
+
+        if isinstance(self.attitude_rep, Quaternion):
+            attitude_init = Quaternion.from_mrp(initial_attitude)
+            attitude_desired = Quaternion.from_mrp(desired_attitude)
+        elif isinstance(self.attitude_rep, EulerAngles):
+            attitude_init = EulerAngles.from_mrp(initial_attitude)
+            attitude_desired = EulerAngles.from_mrp(desired_attitude)
+        else:  # MRP
+            attitude_init = initial_attitude
+            attitude_desired = desired_attitude
+
+        # Initial state vector: [attitude, omega]
+        y0 = np.concatenate([attitude_init, initial_omega])
         t_eval = np.linspace(0, t_final, num_points)
 
         # ODE system
         def dynamics_rhs(t: float, y: np.ndarray) -> np.ndarray:
-            attitude = y[:3]
-            omega = y[3:6]
+            if isinstance(self.attitude_rep, Quaternion):
+                attitude = y[:4]
+                omega = y[4:7]
+            else:
+                attitude = y[:3]
+                omega = y[3:6]
 
             # Compute attitude error
-            error_attitude = self.attitude_rep.error_state(attitude, desired_attitude)
+            error_attitude_rep = self.attitude_rep.error_state(attitude, attitude_desired)
 
-            # Compute control torque
+            # For quaternion control, convert error to MRP for control laws (3 DOF)
+            if isinstance(self.attitude_rep, Quaternion):
+                # Convert quaternion error to MRP for control
+                error_attitude = Quaternion.to_mrp(error_attitude_rep)
+            else:
+                error_attitude = error_attitude_rep
+
+            # Compute control torque (now always 3 DOF)
             u = self.control_law.compute_torque(error_attitude, omega, t)
 
             # For PID, handle anti-windup
@@ -118,8 +142,13 @@ class SpacecraftSimulator:
         # Extract and store results
         state = SimulationState()
         state.t = sol.t
-        state.attitude = sol.y[0:3, :].T
-        state.omega = sol.y[3:6, :].T
+
+        if isinstance(self.attitude_rep, Quaternion):
+            state.attitude = sol.y[0:4, :].T
+            state.omega = sol.y[4:7, :].T
+        else:
+            state.attitude = sol.y[0:3, :].T
+            state.omega = sol.y[3:6, :].T
 
         # Compute errors and control torques for each time step
         state.u_control = []
@@ -133,7 +162,14 @@ class SpacecraftSimulator:
             attitude = state.attitude[i]
             omega = state.omega[i]
 
-            error_attitude = self.attitude_rep.error_state(attitude, desired_attitude)
+            error_attitude_rep = self.attitude_rep.error_state(attitude, attitude_desired)
+
+            # Convert quaternion errors to MRP for consistent metrics
+            if isinstance(self.attitude_rep, Quaternion):
+                error_attitude = Quaternion.to_mrp(error_attitude_rep)
+            else:
+                error_attitude = error_attitude_rep
+
             state.attitude_error.append(error_attitude)
 
             u = self.control_law.compute_torque(error_attitude, omega, t_val)
