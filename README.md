@@ -232,9 +232,37 @@ Represents persistent body-fixed disturbances (e.g., propellant leakage).
 
 📁 Full outputs available in `results/`
 
+### Example visual outputs
+
+After running:
+
+```bash
+python run_simulations.py
+python visualize.py
+```
+
+you can inspect generated plots such as:
+
+- `results/visualizations/Quaternion_PID_NoDisturbance.png`
+- `results/visualizations/MRP_PD_Constant.png`
+- `results/visualizations/comparison_all.png`
+
 ---
 
 ## ✅ Validation
+
+### Recent robustness updates
+
+The simulator now includes a few implementation-level safeguards that are useful to know when interpreting results:
+
+* **PID integral state is integrated in the ODE state**, so simulation runs do not mutate controller instance memory between runs.
+* **Saturation events are logged only when clamping actually occurs** (`u_sat != u_unsat`).
+* **Quaternion trajectories are normalized** during simulation and result extraction to limit numerical drift.
+* **Euler 3-2-1 kinematics use a small denominator guard** near pitch singularity.
+
+These changes improve reproducibility and prevent false saturation reporting in controller comparisons.
+
+---
 
 ### 1. Cross-Representation Consistency
 
