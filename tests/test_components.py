@@ -237,6 +237,7 @@ class TestSimulator:
         dynamics = SpacecraftDynamics()
         mrp = MRP()
         pid = PIDControl(Kp=0.5, Kd=0.1, Ki=0.05, saturation_limit=0.1)
+        initial_integral_state = pid.integral_error.copy()
         simulator = SpacecraftSimulator(dynamics, mrp, pid)
 
         state = simulator.simulate(
@@ -250,6 +251,7 @@ class TestSimulator:
         assert state.u_control.shape == (80, 3)
         assert state.u_saturated.shape == (80, 3)
         assert np.all(np.abs(state.u_saturated) <= 0.1 + 1e-8)
+        assert np.allclose(pid.integral_error, initial_integral_state)
 
 
 if __name__ == '__main__':

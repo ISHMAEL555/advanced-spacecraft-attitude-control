@@ -86,8 +86,9 @@ class SpacecraftSimulator:
 
         # Initial state vector: [attitude, omega, integral_error?]
         if is_pid:
-            self.control_law.reset()
-            y0 = np.concatenate([attitude_init, initial_omega, self.control_law.integral_error])
+            # Keep simulator integration self-contained and avoid mutating controller state.
+            integral_init = np.zeros(3)
+            y0 = np.concatenate([attitude_init, initial_omega, integral_init])
         else:
             y0 = np.concatenate([attitude_init, initial_omega])
         t_eval = np.linspace(0, t_final, num_points)
