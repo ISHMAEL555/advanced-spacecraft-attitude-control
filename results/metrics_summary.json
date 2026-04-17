@@ -1,0 +1,86 @@
+{
+  "MRP_PD_NoDisturbance": {
+    "convergence_time_s": 0.0,
+    "steady_state_error_deg": 0.0,
+    "control_effort_Nms": 15.738774928311031,
+    "saturation_duration_s": 100.20040080160321,
+    "final_error_deg": 0.0
+  },
+  "MRP_PD_Constant": {
+    "convergence_time_s": 0.0,
+    "steady_state_error_deg": 0.0,
+    "control_effort_Nms": 46.78114157447799,
+    "saturation_duration_s": 100.20040080160321,
+    "final_error_deg": 0.0
+  },
+  "MRP_PID_NoDisturbance": {
+    "convergence_time_s": 0.0,
+    "steady_state_error_deg": 0.0,
+    "control_effort_Nms": 10.0,
+    "saturation_duration_s": 100.20040080160321,
+    "final_error_deg": 0.0
+  },
+  "MRP_PID_Constant": {
+    "convergence_time_s": 0.0,
+    "steady_state_error_deg": 0.0,
+    "control_effort_Nms": 15.389866976299537,
+    "saturation_duration_s": 100.20040080160321,
+    "final_error_deg": 0.0
+  },
+  "MRP_Lyapunov_NoDisturbance": {
+    "convergence_time_s": 0.0,
+    "steady_state_error_deg": 0.0,
+    "control_effort_Nms": 10.0,
+    "saturation_duration_s": 100.20040080160321,
+    "final_error_deg": 0.0
+  },
+  "MRP_Lyapunov_Constant": {
+    "convergence_time_s": 0.0,
+    "steady_state_error_deg": 0.0,
+    "control_effort_Nms": 14.96505786105363,
+    "saturation_duration_s": 100.20040080160321,
+    "final_error_deg": 0.0
+  },
+  "Quaternion_PD_NoDisturbance": {
+    "convergence_time_s": 1.8036072144288577,
+    "steady_state_error_deg": 26.040987344941456,
+    "control_effort_Nms": 25.35874917034526,
+    "saturation_duration_s": 77.75551102204409,
+    "final_error_deg": 6.628530189794453
+  },
+  "Quaternion_PD_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 35.02774385280953,
+    "control_effort_Nms": 54.51406793700849,
+    "saturation_duration_s": 99.39879759519039,
+    "final_error_deg": 25.93611150292657
+  },
+  "Quaternion_PID_NoDisturbance": {
+    "convergence_time_s": 1.8036072144288577,
+    "steady_state_error_deg": 25.318348061194712,
+    "control_effort_Nms": 8.949393091180166,
+    "saturation_duration_s": 79.35871743486975,
+    "final_error_deg": 14.869899381172546
+  },
+  "Quaternion_PID_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 35.66046543790086,
+    "control_effort_Nms": 15.68335577554088,
+    "saturation_duration_s": 99.5991983967936,
+    "final_error_deg": 36.91293052276465
+  },
+  "Quaternion_Lyapunov_NoDisturbance": {
+    "convergence_time_s": 1.8036072144288577,
+    "steady_state_error_deg": 26.791619386191492,
+    "control_effort_Nms": 7.879962931008981,
+    "saturation_duration_s": 61.122244488977955,
+    "final_error_deg": 5.78894511801776
+  },
+  "Quaternion_Lyapunov_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 35.2203244657564,
+    "control_effort_Nms": 15.216550444463374,
+    "saturation_duration_s": 98.39679358717436,
+    "final_error_deg": 30.68180270110391
+  }
+}
