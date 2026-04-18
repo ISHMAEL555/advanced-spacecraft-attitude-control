@@ -76,6 +76,19 @@ class PerformanceMetrics:
             return float('inf'), -1
 
     @staticmethod
+    def final_error(state: SimulationState) -> float:
+        """
+        Compute final attitude error magnitude.
+
+        Args:
+            state: SimulationState with results
+
+        Returns:
+            Final error magnitude [rad]
+        """
+        return np.linalg.norm(state.attitude_error[-1])
+
+    @staticmethod
     def control_effort(state: SimulationState) -> float:
         """
         Compute total control effort: ∫ |u(t)| dt.

@@ -109,8 +109,14 @@ class MRP(AttitudeRepresentation):
         """
         Compute MRP error as the MRP of relative rotation.
 
-        σ_err = (σ_d · |σ_c|² - σ_c · |σ_d|² - σ_d × σ_c) / (1 + σ_d · σ_c)
+        For MRP, when sigma_desired = [0,0,0] (identity), error = sigma_current.
+        Otherwise, use the composition formula.
         """
+        # Special case: desired is identity
+        if np.allclose(sigma_desired, np.zeros(3)):
+            return MRP.shadow_check(sigma_current)
+
+        # General case: MRP composition for relative rotation
         sigma_d = sigma_desired
         sigma_c = sigma_current
 
@@ -205,6 +211,9 @@ class Quaternion(AttitudeRepresentation):
         Quaternion kinematic equation: q̇ = (1/2) · Ω(ω) · q
 
         Where Ω is a matrix function of angular velocity.
+
+        Note: Quaternion normalization should be enforced periodically
+        during integration to prevent numerical drift.
         """
         omega_skew = np.array([
             [0, -omega[2], omega[1]],
@@ -279,7 +288,13 @@ class EulerAngles(AttitudeRepresentation):
         cos_phi = np.cos(phi)
         sin_theta = np.sin(theta)
         cos_theta = np.cos(theta)
-        tan_theta = np.tan(theta)
+
+        # Avoid numerical blow-up near 3-2-1 singularity (theta -> ±90 deg)
+        eps = 1e-6
+        if abs(cos_theta) < eps:
+            cos_theta = np.sign(cos_theta) * eps if cos_theta != 0.0 else eps
+
+        tan_theta = sin_theta / cos_theta
 
         # E matrix
         E = np.array([

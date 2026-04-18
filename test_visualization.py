@@ -56,13 +56,12 @@ ax.grid(True, alpha=0.3)
 
 # Control torque
 ax = axes[1, 0]
-ax.plot(t, u_sat[:, 0], label='u_x', linewidth=1.5)
-ax.plot(t, u_sat[:, 1], label='u_y', linewidth=1.5)
-ax.plot(t, u_sat[:, 2], label='u_z', linewidth=1.5)
+u_norm = np.linalg.norm(u_sat, axis=1)
+ax.plot(t, u_norm, 'k-', linewidth=1.5)
+ax.fill_between(t, 0, u_norm, alpha=0.3)
 ax.set_xlabel('Time [s]')
-ax.set_ylabel('Torque [N·m]')
-ax.set_title('Control Torque Components')
-ax.legend()
+ax.set_ylabel('|u(t)| [N·m]')
+ax.set_title('Control Torque Norm')
 ax.grid(True, alpha=0.3)
 
 # Metrics summary

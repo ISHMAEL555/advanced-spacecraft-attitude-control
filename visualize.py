@@ -9,7 +9,7 @@ from pathlib import Path
 
 def plot_single_simulation(config_name, state, metrics):
     """Create comprehensive plots for a single simulation."""
-    fig, axes = plt.subplots(3, 2, figsize=(14, 10))
+    fig, axes = plt.subplots(2, 2, figsize=(14, 8))  # Reduced to 2x2
     fig.suptitle(f'{config_name}', fontsize=14, fontweight='bold')
 
     t = np.array(state.t)
@@ -17,14 +17,14 @@ def plot_single_simulation(config_name, state, metrics):
     omega = np.array(state.omega)
     u_sat = np.array(state.u_saturated)
 
-    # Row 1: Attitude error and angular velocity
+    # Row 1: Attitude error and angular velocity norms
     ax = axes[0, 0]
     error_norm = np.linalg.norm(attitude_error, axis=1)
     ax.semilogy(t, error_norm, 'b-', linewidth=1.5, label='|error|')
     ax.axhline(y=0.5*np.pi/180, color='r', linestyle='--', label='Conv. threshold')
     ax.set_xlabel('Time [s]')
     ax.set_ylabel('Attitude Error [rad]')
-    ax.set_title('Attitude Error')
+    ax.set_title('Attitude Error Norm')
     ax.grid(True, alpha=0.3)
     ax.legend()
 
@@ -33,45 +33,23 @@ def plot_single_simulation(config_name, state, metrics):
     ax.semilogy(t, omega_norm, 'g-', linewidth=1.5)
     ax.set_xlabel('Time [s]')
     ax.set_ylabel('Angular Velocity [rad/s]')
-    ax.set_title('Angular Velocity')
+    ax.set_title('Angular Velocity Norm')
     ax.grid(True, alpha=0.3)
 
-    # Row 2: Control torque components
+    # Row 2: Control torque norm and metrics
     ax = axes[1, 0]
-    ax.plot(t, u_sat[:, 0], label='u_x', linewidth=1)
-    ax.plot(t, u_sat[:, 1], label='u_y', linewidth=1)
-    ax.plot(t, u_sat[:, 2], label='u_z', linewidth=1)
-    ax.axhline(y=0.1, color='r', linestyle='--', alpha=0.5, label='Sat. limit')
-    ax.axhline(y=-0.1, color='r', linestyle='--', alpha=0.5)
-    ax.set_xlabel('Time [s]')
-    ax.set_ylabel('Torque [N·m]')
-    ax.set_title('Control Torque')
-    ax.legend(loc='best', fontsize=8)
-    ax.grid(True, alpha=0.3)
-
-    # Row 2: Control effort
-    ax = axes[1, 1]
     u_norm = np.linalg.norm(u_sat, axis=1)
     ax.plot(t, u_norm, 'k-', linewidth=1.5)
     ax.fill_between(t, 0, u_norm, alpha=0.3)
+    ax.axhline(y=0.1, color='r', linestyle='--', alpha=0.5, label='Sat. limit')
     ax.set_xlabel('Time [s]')
     ax.set_ylabel('|u(t)| [N·m]')
-    ax.set_title(f'Control Effort = {metrics["control_effort_Nms"]:.3f} N·m·s')
-    ax.grid(True, alpha=0.3)
-
-    # Row 3: Attitude error components
-    ax = axes[2, 0]
-    ax.plot(t, attitude_error[:, 0], label='σ_x', linewidth=1)
-    ax.plot(t, attitude_error[:, 1], label='σ_y', linewidth=1)
-    ax.plot(t, attitude_error[:, 2], label='σ_z', linewidth=1)
-    ax.set_xlabel('Time [s]')
-    ax.set_ylabel('Error Component [rad]')
-    ax.set_title('Attitude Error Components')
+    ax.set_title(f'Control Torque Norm')
     ax.legend()
     ax.grid(True, alpha=0.3)
 
-    # Row 3: Metrics summary
-    ax = axes[2, 1]
+    # Row 2: Metrics summary
+    ax = axes[1, 1]
     ax.axis('off')
     metrics_text = f"""
     Convergence Time: {metrics['convergence_time_s']:.3f} s
@@ -82,6 +60,101 @@ def plot_single_simulation(config_name, state, metrics):
     """
     ax.text(0.1, 0.5, metrics_text, fontsize=11, verticalalignment='center',
             family='monospace', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+    plt.tight_layout()
+    return fig
+
+
+def create_results_table(metrics_summary):
+    """Create a comprehensive results table for all configurations."""
+    # Prepare data in deterministic order
+    configs = sorted(metrics_summary.keys(), key=lambda c: (
+        c.split('_')[0],
+        ['PD', 'PID', 'Lyapunov'].index(c.split('_')[1]),
+        c.split('_')[2]
+    ))
+    data = []
+    for config in configs:
+        rep, ctrl, dist = config.split('_')
+        metrics = metrics_summary[config]
+        row = [rep, ctrl, dist,
+               f"{metrics['convergence_time_s']:.3f}",
+               f"{metrics['steady_state_error_deg']:.4f}",
+               f"{metrics['control_effort_Nms']:.3f}",
+               f"{metrics['saturation_duration_s']:.3f}",
+               f"{metrics['final_error_deg']:.4f}"]
+        data.append(row)
+
+    # Column headers
+    columns = ['Rep.', 'Control', 'Dist.', 'Conv. Time [s]', 'SS Error [°]',
+               'Control Effort [N·m·s]', 'Sat. Time [s]', 'Final Error [°]']
+
+    # Create matplotlib table
+    fig, ax = plt.subplots(figsize=(18, 10))
+    ax.axis('tight')
+    ax.axis('off')
+
+    # Create table
+    table = ax.table(cellText=data,
+                     colLabels=columns,
+                     cellLoc='center',
+                     loc='center',
+                     colColours=['#f0f0f0']*len(columns))
+
+    # Style the table
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1.2, 1.5)
+
+    # Color code by representation
+    colors = {'MRP': '#e6f3ff', 'Quaternion': '#fff2e6', 'Euler': '#f0fff0'}
+    for i, row in enumerate(data, 1):  # Start from 1 since 0 is header
+        rep = row[0]
+        for j in range(len(columns)):
+            table[(i, j)].set_facecolor(colors.get(rep, 'white'))
+
+    plt.title('Simulation Results Summary', fontsize=14, fontweight='bold', pad=20)
+    return fig
+
+
+def create_grouped_comparison_plots(metrics_summary):
+    """Create comparison plots grouped by representation and disturbance."""
+    # Group data manually
+    groups = {}
+    for config, metrics in metrics_summary.items():
+        rep, ctrl, dist = config.split('_')
+        key = (rep, dist)
+        if key not in groups:
+            groups[key] = {}
+        groups[key][ctrl] = metrics
+
+    fig, axes = plt.subplots(3, 2, figsize=(16, 12))
+    fig.suptitle('Grouped Performance Comparison', fontsize=14, fontweight='bold')
+
+    metrics_keys = ['convergence_time_s', 'steady_state_error_deg', 'control_effort_Nms']
+    metric_names = ['Convergence Time [s]', 'Steady-State Error [°]', 'Control Effort [N·m·s]']
+
+    row = 0
+    col = 0
+    for (rep, dist), group_data in groups.items():
+        ax = axes[row, col]
+        controls = list(group_data.keys())
+        x = np.arange(len(controls))
+
+        for i, metric in enumerate(metrics_keys):
+            values = [group_data[ctrl][metric] for ctrl in controls]
+            ax.bar(x + i*0.25, values, width=0.25, label=metric_names[i], alpha=0.7)
+
+        ax.set_title(f'{rep} - {dist}')
+        ax.set_xticks(x + 0.25)
+        ax.set_xticklabels(controls)
+        ax.legend()
+        ax.grid(True, alpha=0.3, axis='y')
+
+        col += 1
+        if col == 2:
+            col = 0
+            row += 1
 
     plt.tight_layout()
     return fig
@@ -168,6 +241,16 @@ def generate_visualizations():
     print("Generating comparison plot...")
     fig = create_comparison_plot(metrics_summary)
     fig.savefig(vis_dir / 'comparison_all.png', dpi=150, bbox_inches='tight')
+    plt.close(fig)
+
+    print("Generating results table...")
+    fig = create_results_table(metrics_summary)
+    fig.savefig(vis_dir / 'results_table.png', dpi=150, bbox_inches='tight')
+    plt.close(fig)
+
+    print("Generating grouped comparison plots...")
+    fig = create_grouped_comparison_plots(metrics_summary)
+    fig.savefig(vis_dir / 'grouped_comparison.png', dpi=150, bbox_inches='tight')
     plt.close(fig)
 
     print(f"✓ Visualizations saved to results/visualizations/")
