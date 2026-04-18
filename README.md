@@ -36,6 +36,40 @@ Each configuration is evaluated against a consistent set of performance metrics 
 
 ---
 
+## 🗂️ Results Tables
+
+### Main benchmark metrics (No Disturbance)
+
+| Rank (by convergence) | Configuration | Convergence Time (s) | Steady-State Error (deg) | Final Error (deg) | Control Effort (N·m·s) | Saturation Duration (s) |
+|---|---|---:|---:|---:|---:|---:|
+| 1 | Quaternion_PD_NoDisturbance | 1.91 | 35.6255 | 35.7153 | 479.87 | 99.83 |
+| 2 | Quaternion_PID_NoDisturbance | 1.91 | 25.2805 | 23.2832 | 492.90 | 99.96 |
+| 3 | Quaternion_Lyapunov_NoDisturbance | 1.92 | 25.7365 | 31.3294 | 486.33 | 99.95 |
+| 4 | MRP_PID_NoDisturbance | 17.94 | 57.2458 | 57.2377 | 493.15 | 99.94 |
+| 5 | MRP_PD_NoDisturbance | 18.03 | 0.0053 | 0.0012 | 343.21 | 81.57 |
+| 6 | MRP_Lyapunov_NoDisturbance | 18.12 | 0.0002 | 0.0001 | 279.17 | 69.46 |
+| 7 | Euler_PD_NoDisturbance | ∞ | 133668.2405 | 147680.3962 | 853.66 | 100.01 |
+| 8 | Euler_PID_NoDisturbance | ∞ | 134142.9189 | 148176.0317 | 848.66 | 100.01 |
+| 9 | Euler_Lyapunov_NoDisturbance | ∞ | 1841.1545 | 1881.8809 | 53.35 | 44.25 |
+
+### Main benchmark metrics (Constant Disturbance)
+
+| Rank (by convergence) | Configuration | Convergence Time (s) | Steady-State Error (deg) | Final Error (deg) | Control Effort (N·m·s) | Saturation Duration (s) |
+|---|---|---:|---:|---:|---:|---:|
+| 1 | MRP_PD_Constant | 58.52 | 23.0724 | 7.7203 | 649.67 | 100.01 |
+| 2 | MRP_PID_Constant | ∞ | 57.2958 | 57.2958 | 792.62 | 100.01 |
+| 3 | MRP_Lyapunov_Constant | ∞ | 2.8134 | 2.8104 | 569.55 | 100.01 |
+| 4 | Quaternion_PD_Constant | ∞ | 45.8137 | 47.5988 | 791.76 | 100.01 |
+| 5 | Quaternion_PID_Constant | ∞ | 41.5963 | 37.6967 | 825.60 | 100.01 |
+| 6 | Quaternion_Lyapunov_Constant | ∞ | 51.9742 | 49.6596 | 777.49 | 100.01 |
+| 7 | Euler_PD_Constant | ∞ | 160570.3407 | 177405.8862 | 804.49 | 100.01 |
+| 8 | Euler_PID_Constant | ∞ | 159982.0974 | 176785.8889 | 848.01 | 100.01 |
+| 9 | Euler_Lyapunov_Constant | ∞ | 2590.7797 | 2645.4696 | 246.82 | 100.01 |
+
+> Source files: `results/metrics_summary.json` and `results/analytical_metrics_summary.json`.
+
+---
+
 ## 🧱 Spacecraft Model
 
 ### **Inertia Matrix**
@@ -117,19 +151,23 @@ src/
 
 ## 📈 Sample Results
 
-### **Convergence Comparison**
-```
-MRP_PD_NoDisturbance:        18.03s convergence, 0.0053° error
-MRP_Lyapunov_NoDisturbance:  18.12s convergence, 0.00025° error
-Quaternion_PD_NoDisturbance: 1.91s convergence, 35.63° error
-```
+### **Overall comparison plot**
+![Overall controller/representation comparison](results/visualizations/comparison_all.png)
 
-### **Control Effort Comparison**
-```
-MRP Controllers:        279-343 N·m·s
-Quaternion Controllers: 480-495 N·m·s
-Euler Controllers:      53-854 N·m·s (with singularities)
-```
+### **Grouped metrics comparison**
+![Grouped comparison across convergence, error, and effort](results/visualizations/grouped_comparison.png)
+
+### **Rendered summary table figure**
+![Rendered results table figure](results/visualizations/results_table.png)
+
+### **Representative trajectory plots**
+| Configuration | Plot |
+|---|---|
+| MRP_PD_NoDisturbance | ![MRP PD No Disturbance](results/visualizations/MRP_PD_NoDisturbance.png) |
+| MRP_Lyapunov_NoDisturbance | ![MRP Lyapunov No Disturbance](results/visualizations/MRP_Lyapunov_NoDisturbance.png) |
+| Quaternion_PD_NoDisturbance | ![Quaternion PD No Disturbance](results/visualizations/Quaternion_PD_NoDisturbance.png) |
+| MRP_PD_Constant | ![MRP PD Constant](results/visualizations/MRP_PD_Constant.png) |
+| Quaternion_PD_Constant | ![Quaternion PD Constant](results/visualizations/Quaternion_PD_Constant.png) |
 
 ---
 
