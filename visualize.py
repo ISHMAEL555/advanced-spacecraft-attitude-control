@@ -19,7 +19,7 @@ def plot_single_simulation(config_name, state, metrics):
 
     # Row 1: Attitude error and angular velocity norms
     ax = axes[0, 0]
-    error_norm = np.linalg.norm(attitude_error, axis=1)
+    error_norm = np.clip(np.linalg.norm(attitude_error, axis=1), 1e-12, None)
     ax.semilogy(t, error_norm, 'b-', linewidth=1.5, label='|error|')
     ax.axhline(y=0.5*np.pi/180, color='r', linestyle='--', label='Conv. threshold')
     ax.set_xlabel('Time [s]')
@@ -29,7 +29,7 @@ def plot_single_simulation(config_name, state, metrics):
     ax.legend()
 
     ax = axes[0, 1]
-    omega_norm = np.linalg.norm(omega, axis=1)
+    omega_norm = np.clip(np.linalg.norm(omega, axis=1), 1e-12, None)
     ax.semilogy(t, omega_norm, 'g-', linewidth=1.5)
     ax.set_xlabel('Time [s]')
     ax.set_ylabel('Angular Velocity [rad/s]')

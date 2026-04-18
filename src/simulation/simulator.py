@@ -87,9 +87,14 @@ class SpacecraftSimulator:
         t_eval = np.linspace(0, t_final, num_points)
 
         # ODE system
+        last_t = [0.0]
+
         def dynamics_rhs(t: float, y: np.ndarray) -> np.ndarray:
+            dt = max(0.0, t - last_t[0])
+            last_t[0] = t
+
             if isinstance(self.attitude_rep, Quaternion):
-                attitude = y[:4]
+                attitude = Quaternion.normalize(y[:4])
                 omega = y[4:7]
             else:
                 attitude = y[:3]
@@ -105,19 +110,9 @@ class SpacecraftSimulator:
             else:
                 error_attitude = error_attitude_rep
 
-            # Compute control torque (now always 3 DOF)
-            u = self.control_law.compute_torque(error_attitude, omega, t)
-
-            # For PID, handle anti-windup
-            if hasattr(self.control_law, 'update_integral_state'):
-                u_unsat = (
-                    -self.control_law.Kp * error_attitude
-                    - self.control_law.Kd * omega
-                    - self.control_law.Ki * self.control_law.integral_error
-                )
-                self.control_law.update_integral_state(
-                    error_attitude, u, u_unsat, dt=1.0/num_points*t_final
-                )
+            _, u = self._compute_control_torques(
+                error_attitude, omega, t, dt=dt, update_integral=True
+            )
 
             # Compute angular acceleration from dynamics
             omega_dot = self.dynamics.angular_velocity_derivative(
@@ -144,9 +139,7 @@ class SpacecraftSimulator:
         state.t = sol.t
 
         if isinstance(self.attitude_rep, Quaternion):
-            # Extract quaternion states and normalize to prevent drift
             state.attitude = sol.y[0:4, :].T
-            state.attitude = np.array([Quaternion.normalize(q) for q in state.attitude])
             state.omega = sol.y[4:7, :].T
         else:
             state.attitude = sol.y[0:3, :].T
@@ -160,7 +153,10 @@ class SpacecraftSimulator:
 
         self.control_law.reset()  # Reset for replay
 
+        prev_t = sol.t[0] if len(sol.t) > 0 else 0.0
         for i, t_val in enumerate(sol.t):
+            dt = max(0.0, t_val - prev_t)
+            prev_t = t_val
             attitude = state.attitude[i]
             omega = state.omega[i]
 
@@ -174,11 +170,14 @@ class SpacecraftSimulator:
 
             state.attitude_error.append(error_attitude)
 
-            u = self.control_law.compute_torque(error_attitude, omega, t_val)
-            state.u_saturated.append(u)
+            u_unsat, u_sat = self._compute_control_torques(
+                error_attitude, omega, t_val, dt=dt, update_integral=True
+            )
+            state.u_control.append(u_unsat)
+            state.u_saturated.append(u_sat)
 
             # Check for saturation
-            if np.any(np.abs(u) > 0.1 - 1e-6):
+            if np.any(np.abs(u_sat) > 0.1 - 1e-6):
                 state.saturation_times.append(t_val)
 
         state.u_control = np.array(state.u_control)
@@ -186,6 +185,46 @@ class SpacecraftSimulator:
         state.attitude_error = np.array(state.attitude_error)
 
         return state
+
+    def _compute_control_torques(
+        self,
+        error_attitude: np.ndarray,
+        omega: np.ndarray,
+        time: float,
+        dt: float,
+        update_integral: bool
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Compute unsaturated and saturated control torques.
+
+        Returns:
+            (u_unsat, u_sat)
+        """
+        # PID: explicit unsaturated torque + anti-windup update
+        if hasattr(self.control_law, 'update_integral_state'):
+            u_unsat = (
+                -self.control_law.Kp * error_attitude
+                - self.control_law.Kd * omega
+                - self.control_law.Ki * self.control_law.integral_error
+            )
+            u_sat = self.control_law._saturate(u_unsat)
+
+            if update_integral and dt > 0.0:
+                self.control_law.update_integral_state(error_attitude, u_sat, u_unsat, dt=dt)
+
+            return u_unsat, u_sat
+
+        # Lyapunov controller: recover unsaturated form for logging
+        if hasattr(self.control_law, 'k1') and hasattr(self.control_law, 'k2'):
+            norm_sq = np.dot(error_attitude, error_attitude)
+            attitude_gain = self.control_law.k1 / (1.0 + norm_sq)
+            u_unsat = -attitude_gain * error_attitude - self.control_law.k2 * omega
+            u_sat = self.control_law._saturate(u_unsat)
+            return u_unsat, u_sat
+
+        # PD controller has no internal saturation in this implementation
+        u = self.control_law.compute_torque(error_attitude, omega, time)
+        return u, u
 
     def monte_carlo_analysis(
         self,
