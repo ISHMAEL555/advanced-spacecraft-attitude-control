@@ -1,86 +1,128 @@
 {
   "MRP_PD_NoDisturbance": {
-    "convergence_time_s": 0.0,
-    "steady_state_error_deg": 0.0,
-    "control_effort_Nms": 15.738774928311031,
-    "saturation_duration_s": 100.20040080160321,
-    "final_error_deg": 0.0
+    "convergence_time_s": 18.031803180318033,
+    "steady_state_error_deg": 0.005296405902676193,
+    "control_effort_Nms": 343.21384214130995,
+    "saturation_duration_s": 81.56815681568158,
+    "final_error_deg": 0.0012087361228786608
   },
   "MRP_PD_Constant": {
-    "convergence_time_s": 0.0,
-    "steady_state_error_deg": 0.0,
-    "control_effort_Nms": 46.78114157447799,
-    "saturation_duration_s": 100.20040080160321,
-    "final_error_deg": 0.0
+    "convergence_time_s": 58.51585158515852,
+    "steady_state_error_deg": 23.072360214681087,
+    "control_effort_Nms": 649.671162738596,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 7.7203411831582915
   },
   "MRP_PID_NoDisturbance": {
-    "convergence_time_s": 0.0,
-    "steady_state_error_deg": 0.0,
-    "control_effort_Nms": 10.0,
-    "saturation_duration_s": 100.20040080160321,
-    "final_error_deg": 0.0
+    "convergence_time_s": 17.941794179417943,
+    "steady_state_error_deg": 57.245849086206974,
+    "control_effort_Nms": 493.1545196184623,
+    "saturation_duration_s": 99.93999399939995,
+    "final_error_deg": 57.237741565884626
   },
   "MRP_PID_Constant": {
-    "convergence_time_s": 0.0,
-    "steady_state_error_deg": 0.0,
-    "control_effort_Nms": 15.389866976299537,
-    "saturation_duration_s": 100.20040080160321,
-    "final_error_deg": 0.0
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 57.295759663182935,
+    "control_effort_Nms": 792.6217579945945,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 57.295759549177895
   },
   "MRP_Lyapunov_NoDisturbance": {
-    "convergence_time_s": 0.0,
-    "steady_state_error_deg": 0.0,
-    "control_effort_Nms": 10.0,
-    "saturation_duration_s": 100.20040080160321,
-    "final_error_deg": 0.0
+    "convergence_time_s": 18.12181218121812,
+    "steady_state_error_deg": 0.00024522715264055074,
+    "control_effort_Nms": 279.17263655650993,
+    "saturation_duration_s": 69.45694569456946,
+    "final_error_deg": 7.403442595135033e-05
   },
   "MRP_Lyapunov_Constant": {
-    "convergence_time_s": 0.0,
-    "steady_state_error_deg": 0.0,
-    "control_effort_Nms": 14.96505786105363,
-    "saturation_duration_s": 100.20040080160321,
-    "final_error_deg": 0.0
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 2.813379653617838,
+    "control_effort_Nms": 569.5512152533876,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 2.810441038981387
   },
   "Quaternion_PD_NoDisturbance": {
-    "convergence_time_s": 1.8036072144288577,
-    "steady_state_error_deg": 26.040987344941456,
-    "control_effort_Nms": 25.35874917034526,
-    "saturation_duration_s": 77.75551102204409,
-    "final_error_deg": 6.628530189794453
+    "convergence_time_s": 1.9101910191019102,
+    "steady_state_error_deg": 35.62553846228916,
+    "control_effort_Nms": 479.8703925816047,
+    "saturation_duration_s": 99.82998299829984,
+    "final_error_deg": 35.71530558424535
   },
   "Quaternion_PD_Constant": {
     "convergence_time_s": Infinity,
-    "steady_state_error_deg": 35.02774385280953,
-    "control_effort_Nms": 54.51406793700849,
-    "saturation_duration_s": 99.39879759519039,
-    "final_error_deg": 25.93611150292657
+    "steady_state_error_deg": 45.81371513781731,
+    "control_effort_Nms": 791.7637530735899,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 47.59875239134419
   },
   "Quaternion_PID_NoDisturbance": {
-    "convergence_time_s": 1.8036072144288577,
-    "steady_state_error_deg": 25.318348061194712,
-    "control_effort_Nms": 8.949393091180166,
-    "saturation_duration_s": 79.35871743486975,
-    "final_error_deg": 14.869899381172546
+    "convergence_time_s": 1.9101910191019102,
+    "steady_state_error_deg": 25.280534080283203,
+    "control_effort_Nms": 492.89957530698166,
+    "saturation_duration_s": 99.95999599959997,
+    "final_error_deg": 23.28324094466385
   },
   "Quaternion_PID_Constant": {
     "convergence_time_s": Infinity,
-    "steady_state_error_deg": 35.66046543790086,
-    "control_effort_Nms": 15.68335577554088,
-    "saturation_duration_s": 99.5991983967936,
-    "final_error_deg": 36.91293052276465
+    "steady_state_error_deg": 41.596259165873946,
+    "control_effort_Nms": 825.59505272907,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 37.69670056436367
   },
   "Quaternion_Lyapunov_NoDisturbance": {
-    "convergence_time_s": 1.8036072144288577,
-    "steady_state_error_deg": 26.791619386191492,
-    "control_effort_Nms": 7.879962931008981,
-    "saturation_duration_s": 61.122244488977955,
-    "final_error_deg": 5.78894511801776
+    "convergence_time_s": 1.9201920192019202,
+    "steady_state_error_deg": 25.736531671725167,
+    "control_effort_Nms": 486.32825018082656,
+    "saturation_duration_s": 99.94999499949995,
+    "final_error_deg": 31.3293573314019
   },
   "Quaternion_Lyapunov_Constant": {
     "convergence_time_s": Infinity,
-    "steady_state_error_deg": 35.2203244657564,
-    "control_effort_Nms": 15.216550444463374,
-    "saturation_duration_s": 98.39679358717436,
-    "final_error_deg": 30.68180270110391
+    "steady_state_error_deg": 51.97415046609739,
+    "control_effort_Nms": 777.4900145441388,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 49.659595575648574
+  },
+  "Euler_PD_NoDisturbance": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 133668.24054686725,
+    "control_effort_Nms": 853.6614453612852,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 147680.39618312434
+  },
+  "Euler_PD_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 160570.3407243754,
+    "control_effort_Nms": 804.4918526978153,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 177405.88620061948
+  },
+  "Euler_PID_NoDisturbance": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 134142.91886681,
+    "control_effort_Nms": 848.6636976230833,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 148176.0317486628
+  },
+  "Euler_PID_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 159982.0973568366,
+    "control_effort_Nms": 848.0066665254988,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 176785.88891480307
+  },
+  "Euler_Lyapunov_NoDisturbance": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 1841.154497368769,
+    "control_effort_Nms": 53.353026031482244,
+    "saturation_duration_s": 44.25442544254425,
+    "final_error_deg": 1881.8809260219418
+  },
+  "Euler_Lyapunov_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 2590.7797373577837,
+    "control_effort_Nms": 246.82113371281565,
+    "saturation_duration_s": 100.01000100010002,
+    "final_error_deg": 2645.4696354892117
   }
 }

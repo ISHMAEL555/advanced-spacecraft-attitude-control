@@ -67,19 +67,20 @@ class ConfigurationGenerator:
         """
         return {
             'PD': {
-                'Kp': 0.5,
-                'Kd': 0.1
+                'Kp': 50.0,
+                'Kd': 10.0,
+                'saturation_limit': 5.0
             },
             'PID': {
-                'Kp': 0.5,
-                'Kd': 0.1,
-                'Ki': 0.05,
-                'saturation_limit': 0.1
+                'Kp': 50.0,
+                'Kd': 10.0,
+                'Ki': 0.1,
+                'saturation_limit': 5.0
             },
             'Lyapunov': {
-                'k1': 0.5,
-                'k2': 0.1,
-                'saturation_limit': 0.1
+                'k1': 50.0,
+                'k2': 10.0,
+                'saturation_limit': 5.0
             }
         }
 

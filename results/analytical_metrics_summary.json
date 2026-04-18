@@ -1,0 +1,206 @@
+{
+  "MRP_PD_NoDisturbance": {
+    "convergence_time_s": 33.16658329164582,
+    "steady_state_error_deg": 9.558979937393479e-06,
+    "final_error_deg": 3.7827413145431285e-06,
+    "control_effort_Nms": 66.39236177704363,
+    "gains": {
+      "Kp": 40.0,
+      "Kd": 56.568542494923804,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "MRP_PD_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 3.5086465377765683,
+    "final_error_deg": 3.508638830389608,
+    "control_effort_Nms": 285.793894575114,
+    "gains": {
+      "Kp": 40.0,
+      "Kd": 56.568542494923804,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "MRP_PID_NoDisturbance": {
+    "convergence_time_s": 9.054527263631815,
+    "steady_state_error_deg": 57.249164514769376,
+    "final_error_deg": 57.28315171980048,
+    "control_effort_Nms": 1091.6534987873183,
+    "gains": {
+      "Kp": 40.0,
+      "Kd": 56.568542494923804,
+      "Ki": 0.4,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "MRP_PID_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 57.29425528393303,
+    "final_error_deg": 57.295386509392884,
+    "control_effort_Nms": 1740.3823904280134,
+    "gains": {
+      "Kp": 40.0,
+      "Kd": 56.568542494923804,
+      "Ki": 0.4,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "MRP_Lyapunov_NoDisturbance": {
+    "convergence_time_s": 40.72036018009004,
+    "steady_state_error_deg": 3.8069379816859114e-05,
+    "final_error_deg": 6.434926337297912e-06,
+    "control_effort_Nms": 53.852066516588025,
+    "gains": {
+      "Kp": 40.0,
+      "Kd": 56.568542494923804,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "MRP_Lyapunov_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 3.5219904886072895,
+    "final_error_deg": 3.521925346918208,
+    "control_effort_Nms": 284.41519030300435,
+    "gains": {
+      "Kp": 40.0,
+      "Kd": 56.568542494923804,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Quaternion_PD_NoDisturbance": {
+    "convergence_time_s": 2.9514757378689342,
+    "steady_state_error_deg": 57.295706291165615,
+    "final_error_deg": 57.29565217806234,
+    "control_effort_Nms": 675.3614121136806,
+    "gains": {
+      "Kp": 10.0,
+      "Kd": 28.284271247461902,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Quaternion_PD_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 57.29566329133282,
+    "final_error_deg": 57.29573979672282,
+    "control_effort_Nms": 932.7745605311698,
+    "gains": {
+      "Kp": 10.0,
+      "Kd": 28.284271247461902,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Quaternion_PID_NoDisturbance": {
+    "convergence_time_s": 2.9514757378689342,
+    "steady_state_error_deg": 25.438033621401132,
+    "final_error_deg": 13.001511056782771,
+    "control_effort_Nms": 1087.7005372830859,
+    "gains": {
+      "Kp": 10.0,
+      "Kd": 28.284271247461902,
+      "Ki": 0.05,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Quaternion_PID_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 31.86020247327806,
+    "final_error_deg": 18.605939139596543,
+    "control_effort_Nms": 1744.9604438785998,
+    "gains": {
+      "Kp": 10.0,
+      "Kd": 28.284271247461902,
+      "Ki": 0.05,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Quaternion_Lyapunov_NoDisturbance": {
+    "convergence_time_s": 2.9514757378689342,
+    "steady_state_error_deg": 57.29563969851853,
+    "final_error_deg": 57.295549238560184,
+    "control_effort_Nms": 341.42495981641173,
+    "gains": {
+      "Kp": 10.0,
+      "Kd": 28.284271247461902,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Quaternion_Lyapunov_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 57.29553933470066,
+    "final_error_deg": 57.29547284274828,
+    "control_effort_Nms": 503.16484448754227,
+    "gains": {
+      "Kp": 10.0,
+      "Kd": 28.284271247461902,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Euler_PD_NoDisturbance": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 234244.16821934315,
+    "final_error_deg": 261646.03511503423,
+    "control_effort_Nms": 1058.4198744720607,
+    "gains": {
+      "Kp": 2.0,
+      "Kd": 12.649110640673518,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Euler_PD_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 256996.48957827844,
+    "final_error_deg": 286980.6043571947,
+    "control_effort_Nms": 1074.937813731504,
+    "gains": {
+      "Kp": 2.0,
+      "Kd": 12.649110640673518,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Euler_PID_NoDisturbance": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 285093.0125713593,
+    "final_error_deg": 315337.55777589895,
+    "control_effort_Nms": 1735.0704600050037,
+    "gains": {
+      "Kp": 2.0,
+      "Kd": 12.649110640673518,
+      "Ki": 0.004,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Euler_PID_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 296473.8943465441,
+    "final_error_deg": 328691.20399483753,
+    "control_effort_Nms": 1129.6361558498975,
+    "gains": {
+      "Kp": 2.0,
+      "Kd": 12.649110640673518,
+      "Ki": 0.004,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Euler_Lyapunov_NoDisturbance": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 379.6620959362173,
+    "final_error_deg": 379.56309306141867,
+    "control_effort_Nms": 40.56899251361712,
+    "gains": {
+      "Kp": 2.0,
+      "Kd": 12.649110640673518,
+      "saturation_limit": 10.954451150103322
+    }
+  },
+  "Euler_Lyapunov_Constant": {
+    "convergence_time_s": Infinity,
+    "steady_state_error_deg": 1369.7723472770751,
+    "final_error_deg": 1487.8120737258796,
+    "control_effort_Nms": 278.25507788894305,
+    "gains": {
+      "Kp": 2.0,
+      "Kd": 12.649110640673518,
+      "saturation_limit": 10.954451150103322
+    }
+  }
+}

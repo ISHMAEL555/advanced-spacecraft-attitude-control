@@ -139,7 +139,7 @@ class SpacecraftSimulator:
         state.t = sol.t
 
         if isinstance(self.attitude_rep, Quaternion):
-            state.attitude = np.array([Quaternion.normalize(q) for q in sol.y[0:4, :].T])
+            state.attitude = sol.y[0:4, :].T
             state.omega = sol.y[4:7, :].T
         else:
             state.attitude = sol.y[0:3, :].T

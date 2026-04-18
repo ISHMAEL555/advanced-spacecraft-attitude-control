@@ -1,0 +1,98 @@
+{
+  "MRP_PD_NoDisturbance": {
+    "Kp": 40.0,
+    "Kd": 56.568542494923804,
+    "saturation_limit": 10.954451150103322
+  },
+  "MRP_PID_NoDisturbance": {
+    "Kp": 40.0,
+    "Kd": 56.568542494923804,
+    "Ki": 0.4,
+    "saturation_limit": 10.954451150103322
+  },
+  "MRP_Lyapunov_NoDisturbance": {
+    "Kp": 40.0,
+    "Kd": 56.568542494923804,
+    "saturation_limit": 10.954451150103322
+  },
+  "MRP_PD_Constant": {
+    "Kp": 40.0,
+    "Kd": 56.568542494923804,
+    "saturation_limit": 10.954451150103322
+  },
+  "MRP_PID_Constant": {
+    "Kp": 40.0,
+    "Kd": 56.568542494923804,
+    "Ki": 0.4,
+    "saturation_limit": 10.954451150103322
+  },
+  "MRP_Lyapunov_Constant": {
+    "Kp": 40.0,
+    "Kd": 56.568542494923804,
+    "saturation_limit": 10.954451150103322
+  },
+  "Quaternion_PD_NoDisturbance": {
+    "Kp": 10.0,
+    "Kd": 28.284271247461902,
+    "saturation_limit": 10.954451150103322
+  },
+  "Quaternion_PID_NoDisturbance": {
+    "Kp": 10.0,
+    "Kd": 28.284271247461902,
+    "Ki": 0.05,
+    "saturation_limit": 10.954451150103322
+  },
+  "Quaternion_Lyapunov_NoDisturbance": {
+    "Kp": 10.0,
+    "Kd": 28.284271247461902,
+    "saturation_limit": 10.954451150103322
+  },
+  "Quaternion_PD_Constant": {
+    "Kp": 10.0,
+    "Kd": 28.284271247461902,
+    "saturation_limit": 10.954451150103322
+  },
+  "Quaternion_PID_Constant": {
+    "Kp": 10.0,
+    "Kd": 28.284271247461902,
+    "Ki": 0.05,
+    "saturation_limit": 10.954451150103322
+  },
+  "Quaternion_Lyapunov_Constant": {
+    "Kp": 10.0,
+    "Kd": 28.284271247461902,
+    "saturation_limit": 10.954451150103322
+  },
+  "Euler_PD_NoDisturbance": {
+    "Kp": 2.0,
+    "Kd": 12.649110640673518,
+    "saturation_limit": 10.954451150103322
+  },
+  "Euler_PID_NoDisturbance": {
+    "Kp": 2.0,
+    "Kd": 12.649110640673518,
+    "Ki": 0.004,
+    "saturation_limit": 10.954451150103322
+  },
+  "Euler_Lyapunov_NoDisturbance": {
+    "Kp": 2.0,
+    "Kd": 12.649110640673518,
+    "saturation_limit": 10.954451150103322
+  },
+  "Euler_PD_Constant": {
+    "Kp": 2.0,
+    "Kd": 12.649110640673518,
+    "saturation_limit": 10.954451150103322
+  },
+  "Euler_PID_Constant": {
+    "Kp": 2.0,
+    "Kd": 12.649110640673518,
+    "Ki": 0.004,
+    "saturation_limit": 10.954451150103322
+  },
+  "Euler_Lyapunov_Constant": {
+    "Kp": 2.0,
+    "Kd": 12.649110640673518,
+    "saturation_limit": 10.954451150103322
+  }
+}
